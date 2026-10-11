@@ -103,6 +103,12 @@ async function showFeedStatus() {
     }
 }
 
+// El enlace «Saltar al contenido» no debe pasar por el router de hashes.
+document.querySelector('.skip-link').addEventListener('click', event => {
+    event.preventDefault();
+    app.focus();
+});
+
 searchForm.addEventListener('submit', event => {
     event.preventDefault();
     const query = searchForm.q.value.trim();
