@@ -1,0 +1,14 @@
+{
+  "name": "onlynews-pipeline",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test \"pipeline/test/*.test.js\"",
+    "build": "node pipeline/build.js site/data",
+    "inspect": "node pipeline/tools/inspect.js"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.5.0"
+  }
+}

@@ -19,3 +19,7 @@
 ###> static site (GitHub Pages) ###
 /site/data/
 ###< static site ###
+
+###> pipeline (node) ###
+/node_modules/
+###< pipeline ###
