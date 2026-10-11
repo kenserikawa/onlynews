@@ -8,10 +8,20 @@ Search engine based on [NewsAPI](https://newsapi.org)service
 Next updates coming soon
 
 ## Static version (GitHub Pages)
-`site/` is a static build of OnlyNews (headlines, keyword search over them and sources by category; no login).
-NewsAPI can't be called from the browser, so `.github/workflows/pages.yml` runs `scripts/fetch-news.sh`
-every 3 hours, saves the JSON into `site/data/` and deploys `site/` to Pages.
+**https://kenserikawa.github.io/onlynews/**: a Ground News–style aggregator. Stories are grouped across
+~37 Spanish and international outlets, with a left/center/right coverage bar, blindspots and a side-by-side
+comparison of how each outlet covers the story.
 
-Setup: add the `NEWS_API_KEY` repository secret and set *Settings → Pages → Source* to **GitHub Actions**.
+- `pipeline/`: Node script run hourly by `.github/workflows/pages.yml`. It fetches the RSS feeds listed in
+  `pipeline/sources.json`, clusters articles into stories (TF-IDF + average-link) and writes `site/data/*.json`.
+- `site/`: static front-end (plain HTML/CSS/ES modules) that only reads those JSON files.
+- Outlet bias ratings live in `pipeline/sources.json` and are indicative.
+- Optional: set `REFINE_ENDPOINT` (OpenAI-compatible API) to plug in a model for refining stories (not implemented yet).
 
-Local preview: `NEWS_API_KEY=xxx scripts/fetch-news.sh && python3 -m http.server -d site`
+```bash
+npm install
+npm test                                   # pipeline unit tests
+npm run build                              # fetch feeds → site/data/
+node pipeline/tools/inspect.js es          # review clustering
+python3 -m http.server -d site             # preview at http://localhost:8000
+```

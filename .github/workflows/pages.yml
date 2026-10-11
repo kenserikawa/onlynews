@@ -3,10 +3,9 @@ name: Deploy static site to GitHub Pages
 on:
   push:
     branches: [master]
-    paths: ['site/**', 'scripts/fetch-news.sh', '.github/workflows/pages.yml']
+    paths: ['site/**', 'pipeline/**', 'package.json', 'package-lock.json', '.github/workflows/pages.yml']
   schedule:
-    # Cada 3 horas: 8 peticiones por ejecución × 8 = 64/día (límite gratuito de NewsAPI: 100/día)
-    - cron: '17 */3 * * *'
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -27,10 +26,19 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Fetch news from NewsAPI
-        env:
-          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
-        run: scripts/fetch-news.sh site/data
+      # Si setup-node@v5 no resolviera, usar @v4 (funciona igual, solo avisa de Node 20).
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Test pipeline
+        run: npm test
+
+      - name: Build news data from RSS feeds
+        run: node pipeline/build.js site/data
 
       - uses: actions/configure-pages@v5
 
