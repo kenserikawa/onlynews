@@ -127,3 +127,29 @@ test('no expande entidades anidadas del DOCTYPE (ataque billion laughs)', () => 
     }
     assert.ok(titleLength < 1000, `título expandido a ${titleLength} caracteres`);
 });
+
+test('entiende zonas horarias europeas abreviadas (CEST, CET, BST, WEST)', () => {
+    const xml = `<rss><channel>
+<item><title>A</title><link>https://m.es/a</link><pubDate>Sun, 11 Oct 2026 19:30:00 CEST</pubDate></item>
+<item><title>B</title><link>https://m.es/b</link><pubDate>Sun, 11 Oct 2026 18:30:00 CET</pubDate></item>
+<item><title>C</title><link>https://m.es/c</link><pubDate>Sun, 11 Oct 2026 18:30:00 BST</pubDate></item>
+<item><title>D</title><link>https://m.es/d</link><pubDate>Sun, 11 Oct 2026 18:30:00 WEST</pubDate></item>
+<item><title>E</title><link>https://m.es/e</link><pubDate>no es una fecha</pubDate></item>
+</channel></rss>`;
+    const dates = parseFeed(xml, source, { now }).map(a => a.publishedAt);
+    assert.deepEqual(dates, [
+        '2026-10-11T17:30:00.000Z',
+        '2026-10-11T17:30:00.000Z',
+        '2026-10-11T17:30:00.000Z',
+        '2026-10-11T17:30:00.000Z',
+        now.toISOString(),
+    ]);
+});
+
+test('un guid que no es una URL absoluta no se convierte en enlace', () => {
+    const xml = `<rss><channel>
+<item><title>Solo guid numérico</title><guid>12345</guid></item>
+<item><title>Guid URL</title><guid>https://m.es/guid-url</guid></item>
+</channel></rss>`;
+    assert.deepEqual(parseFeed(xml, source, { now }).map(a => a.url), ['https://m.es/guid-url']);
+});

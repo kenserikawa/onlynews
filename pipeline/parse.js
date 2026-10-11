@@ -56,14 +56,21 @@ function linkOf(item) {
             return String(link);
         }
     }
+    // Un guid solo vale como enlace si es una URL absoluta: «12345» resuelto contra la web
+    // del medio daría un enlace inventado.
     const guid = item.guid;
     const isPermaLink = !(guid && typeof guid === 'object' && guid['@isPermaLink'] === 'false');
-    return isPermaLink ? textOf(guid) : '';
+    const value = isPermaLink ? textOf(guid).trim() : '';
+    return /^https?:\/\//i.test(value) ? value : '';
 }
+
+// V8 entiende GMT, UTC y las zonas de EE. UU. (EDT…), pero no las europeas abreviadas.
+const ZONE_OFFSETS = { CEST: '+0200', CET: '+0100', BST: '+0100', WEST: '+0100', WET: '+0000', EEST: '+0300', EET: '+0200' };
+const ZONE_PATTERN = new RegExp(`\\b(${Object.keys(ZONE_OFFSETS).join('|')})\\b`);
 
 function dateOf(item, now) {
     for (const key of ['pubDate', 'dc:date', 'published', 'updated', 'dc:created']) {
-        const raw = textOf(item[key]).trim();
+        const raw = textOf(item[key]).trim().replace(ZONE_PATTERN, zone => ZONE_OFFSETS[zone]);
         if (!raw) continue;
         const date = new Date(raw);
         if (Number.isNaN(date.getTime())) continue;
