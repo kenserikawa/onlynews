@@ -1,0 +1,42 @@
+name: Deploy static site to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+    paths: ['site/**', 'scripts/fetch-news.sh', '.github/workflows/pages.yml']
+  schedule:
+    # Cada 3 horas: 8 peticiones por ejecución × 8 = 64/día (límite gratuito de NewsAPI: 100/día)
+    - cron: '17 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch news from NewsAPI
+        env:
+          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
+        run: scripts/fetch-news.sh site/data
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
