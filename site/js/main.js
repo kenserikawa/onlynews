@@ -1,6 +1,8 @@
 // Arranque de la web: router por hash, tema, buscador y estado de los feeds.
 import { prefs } from './prefs.js';
-import { loadJson } from './data.js';
+import { loadJson, loadMarket } from './data.js';
+import { marketSummary } from './coverage.js';
+import { MARKET_NAMES } from './components.js';
 import { h, timeAgo } from './dom.js';
 import { renderHome } from './views/home.js';
 import { renderStory } from './views/story.js';
@@ -21,7 +23,9 @@ const NEXT_THEME = { auto: 'light', light: 'dark', dark: 'auto' };
 const app = document.getElementById('app');
 const searchForm = document.querySelector('.search');
 const themeButton = document.getElementById('theme-toggle');
+const monitor = document.getElementById('monitor');
 let renderToken = 0;
+let monitorToken = 0;
 
 function applyTheme(theme) {
     if (theme === 'auto') delete document.documentElement.dataset.theme;
@@ -65,10 +69,37 @@ async function show(viewPromise) {
     window.scrollTo(0, 0);
 }
 
+// Franja «monitor» bajo la cabecera: medios con artículos, reparto por lado y blindspots
+// del mercado actual, calculados con los mismos datos que la portada.
+async function showMonitor(market) {
+    const token = ++monitorToken;
+    try {
+        const { stories, sourcesById } = await loadMarket(market);
+        if (token !== monitorToken) return;
+        const summary = marketSummary(stories, id => sourcesById[id]?.bias ?? null);
+        const item = (side, text) => h('span', { class: `monitor-item${side ? ` monitor-item--${side}` : ''}` }, text);
+        monitor.replaceChildren(h('div', { class: 'wrap monitor-inner' },
+            item(null, `Monitor · ${MARKET_NAMES[market]} · ${summary.sources} medios`),
+            item('left', `Izq ${summary.share.left}%`),
+            item('center', `Centro ${summary.share.center}%`),
+            item('right', `Der ${summary.share.right}%`),
+            h('span', { class: 'monitor-alert' }, `${summary.blindspots} ${summary.blindspots === 1 ? 'blindspot' : 'blindspots'}`)));
+        monitor.hidden = false;
+    } catch {
+        if (token === monitorToken) monitor.hidden = true;
+    }
+}
+
+function hideMonitor() {
+    monitorToken++;
+    monitor.hidden = true;
+}
+
 function route() {
     const { parts, params } = parseRoute();
     if (parts[0] === 'fuentes') {
         setActiveMarket(null);
+        hideMonitor();
         searchForm.q.value = '';
         return show(renderSources());
     }
@@ -79,6 +110,7 @@ function route() {
     }
     prefs.market = market;
     setActiveMarket(market);
+    showMonitor(market);
     const sub = parts[1];
     const query = params.get('q') ?? '';
     searchForm.q.value = sub === 'buscar' ? query : '';

@@ -1,6 +1,6 @@
 import { h } from '../dom.js';
 import { loadMarket } from '../data.js';
-import { MARKET_NAMES, leadStory, storyCard, storyRow, blindspotPanel, savedPanel } from '../components.js';
+import { MARKET_NAMES, leadStory, storyCard, storyRow, blindspotPanel, savedPanel, methodPanel } from '../components.js';
 
 const GRID_SIZE = 6;
 
@@ -27,12 +27,13 @@ export async function renderHome(market) {
                 h('h2', { id: 'top-h', class: 'section-title' }, 'Más cubiertas'),
                 h('div', { class: 'card-grid' }, rest.slice(0, GRID_SIZE).map(story => storyCard(story, market)))) : null,
             rest.length > GRID_SIZE ? h('section', { 'aria-labelledby': 'more-h' },
-                h('h2', { id: 'more-h', class: 'section-title' }, 'Más historias'),
+                h('h2', { id: 'more-h', class: 'section-title section-title--dark' }, 'Más historias'),
                 h('ol', { class: 'story-list' }, rest.slice(GRID_SIZE).map(story => storyRow(story, market)))) : null,
             otherSingles.length ? h('details', { class: 'singles' },
                 h('summary', {}, `Solo en un medio (${otherSingles.length})`),
                 h('ol', { class: 'story-list story-list--compact' }, otherSingles.map(story => storyRow(story, market, { compact: true })))) : null),
         h('aside', { class: 'home-aside' },
             blindspotPanel(multi, market),
-            savedPanel(stories, market)));
+            savedPanel(stories, market),
+            methodPanel()));
 }

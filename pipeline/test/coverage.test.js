@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { sideOf, coverageOf, blindspotOf, withoutSources } from '../../site/js/coverage.js';
+import { sideOf, coverageOf, blindspotOf, withoutSources, marketSummary } from '../../site/js/coverage.js';
 
 const BIAS = { l2: -2, l1: -1, la: -1, lb: -2, c0: 0, r1: 1, r2: 2, u: null };
 const biasOf = id => BIAS[id] ?? null;
@@ -57,4 +57,21 @@ test('withoutSources recalcula cobertura, título e imagen y elimina historias v
 test('withoutSources con todos los medios ocultos devuelve una lista vacía', () => {
     const stories = [story('s-1', ['l2', 'r1'])];
     assert.deepEqual(withoutSources(stories, new Set(['l2', 'r1']), biasOf), []);
+});
+
+test('marketSummary resume medios activos, reparto por lado y blindspots', () => {
+    const stories = [story('s-1', ['l2', 'l1', 'r1']), story('s-2', ['c0', 'r2', 'u']), story('s-3', ['l2'])];
+    stories[1].blindspot = 'right';
+    assert.deepEqual(marketSummary(stories, biasOf), {
+        sources: 6,
+        share: { left: 50, center: 17, right: 33 },
+        blindspots: 1,
+    });
+});
+
+test('marketSummary reparte porcentajes que suman 100 y tolera listas vacías', () => {
+    const stories = [story('s-1', ['l2', 'c0', 'r1'])];
+    const { share } = marketSummary(stories, biasOf);
+    assert.equal(share.left + share.center + share.right, 100);
+    assert.deepEqual(marketSummary([], biasOf), { sources: 0, share: { left: 0, center: 0, right: 0 }, blindspots: 0 });
 });

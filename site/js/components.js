@@ -5,12 +5,14 @@ import { prefs } from './prefs.js';
 
 export const MARKET_NAMES = { es: 'España', intl: 'Internacional' };
 const SHORT = { left: 'I', center: 'C', right: 'D' };
+const SEGMENT_LABELS = { left: 'IZQ', center: 'CEN', right: 'DER', unrated: 'S/C' };
 
 export function coverageBar(coverage, { large = false } = {}) {
     const present = SIDES.filter(side => coverage[side] > 0);
     const label = present.map(side => `${coverage[side]} ${SIDE_LABELS[side].toLowerCase()}`).join(', ');
     return h('div', { class: `coverage${large ? ' coverage--lg' : ''}`, role: 'img', 'aria-label': `Cobertura: ${label}` },
-        h('div', { class: 'coverage-bar' }, present.map(side => h('span', { class: `seg seg--${side}`, style: `flex-grow:${coverage[side]}` }))),
+        h('div', { class: 'coverage-bar' }, present.map(side => h('span', { class: `seg seg--${side}`, style: `flex-grow:${coverage[side]}` },
+            large ? `${SEGMENT_LABELS[side]} ${coverage[side]}` : null))),
         h('div', { class: 'coverage-legend', 'aria-hidden': 'true' },
             ['left', 'center', 'right'].map(side => h('span', { class: `legend legend--${side}` }, `${SHORT[side]} ${coverage[side]}`))));
 }
@@ -79,7 +81,7 @@ export function blindspotPanel(stories, market) {
             list.length ? h('ol', { class: 'mini-list' }, list.map(story => storyMini(story, market))) : h('p', { class: 'empty' }, 'Ninguna ahora mismo.'),
         ];
     };
-    return h('section', { class: 'panel', 'aria-labelledby': 'blindspots-h' },
+    return h('section', { class: 'panel panel--blindspot', 'aria-labelledby': 'blindspots-h' },
         h('h2', { id: 'blindspots-h' }, 'Blindspots'),
         h('p', { class: 'hint' }, 'Historias que cubre casi solo un lado.'),
         group('left', 'Solo la izquierda'),
@@ -101,4 +103,11 @@ export function savedPanel(stories, market) {
         h('h2', { id: 'saved-h' }, 'Guardadas'),
         items.length ? h('ol', { class: 'mini-list' }, items) : h('p', { class: 'empty' }, 'Guarda historias desde su ficha para leerlas luego.'),
         saved.length ? h('a', { class: 'panel-link', href: `#/${market}/guardadas` }, `Ver todas (${saved.length})`) : null);
+}
+
+export function methodPanel() {
+    return h('section', { class: 'panel panel--note', 'aria-labelledby': 'method-h' },
+        h('h2', { id: 'method-h' }, '¿Cómo medimos?'),
+        h('p', {}, 'Cada medio tiene una orientación aproximada, de izquierda a derecha. La barra cuenta cuántos medios de cada lado cubren cada historia.'),
+        h('a', { href: '#/fuentes' }, 'Ver medios y criterios →'));
 }
