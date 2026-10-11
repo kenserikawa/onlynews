@@ -112,7 +112,7 @@ main:focus { outline: none; }
 .lead-img { width: 100%; height: 100%; min-height: 280px; object-fit: cover; background: var(--surface-2); }
 .lead-body { padding: 24px; display: grid; gap: 14px; align-content: start; }
 .lead .story-title { font-size: clamp(26px, 3vw, 36px); line-height: 1.12; }
-.lead-summary { color: var(--muted); }
+.lead-summary { color: var(--muted); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 @media (max-width: 760px) {
     .lead .story-link { grid-template-columns: 1fr; }
     .lead-img { min-height: 0; aspect-ratio: 16 / 9; }
