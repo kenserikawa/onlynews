@@ -14,7 +14,10 @@ const parser = new XMLParser({
     attributeNamePrefix: '@',
     textNodeName: '#text',
     parseTagValue: false,
-    processEntities: true,
+    // El tope por defecto (1000 expansiones por documento) cuenta también &quot; o &#8220;,
+    // y los feeds grandes lo superan. Se sube solo ese tope; la profundidad y el tamaño de
+    // las entidades del DOCTYPE siguen limitados.
+    processEntities: { enabled: true, maxTotalExpansions: 200_000, maxExpansionDepth: 10 },
     htmlEntities: true,
     trimValues: true,
     isArray: name => ARRAY_TAGS.has(name),

@@ -106,3 +106,24 @@ test('normalizeUrl quita tracking y fragmento, resuelve relativas y rechaza otro
     assert.equal(normalizeUrl(''), null);
     assert.equal(normalizeUrl('abc-123'), null);
 });
+
+test('feeds grandes con más de 1000 entidades estándar se leen enteros', () => {
+    const items = Array.from({ length: 300 }, (_, i) =>
+        `<item><title>&quot;Uno&quot; &amp; &quot;dos&quot; ${i}</title><link>https://m.es/${i}?a=1&amp;b=2</link></item>`).join('');
+    const articles = parseFeed(`<rss><channel>${items}</channel></rss>`, source, { now });
+    assert.equal(articles.length, 300);
+    assert.equal(articles[0].title, '"Uno" & "dos" 0');
+    assert.equal(articles[0].url, 'https://m.es/0?a=1&b=2');
+});
+
+test('no expande entidades anidadas del DOCTYPE (ataque billion laughs)', () => {
+    const bomb = `<?xml version="1.0"?><!DOCTYPE rss [<!ENTITY a "aaaaaaaaaa"><!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;"><!ENTITY c "&b;&b;&b;&b;&b;&b;&b;&b;&b;&b;"><!ENTITY d "&c;&c;&c;&c;&c;&c;&c;&c;&c;&c;"><!ENTITY e "&d;&d;&d;&d;&d;&d;&d;&d;&d;&d;"><!ENTITY f "&e;&e;&e;&e;&e;&e;&e;&e;&e;&e;">]>
+<rss><channel><item><title>&f;&f;&f;&f;&f;&f;&f;&f;&f;&f;</title><link>https://m.es/x</link></item></channel></rss>`;
+    let titleLength = 0;
+    try {
+        titleLength = parseFeed(bomb, source, { now })[0]?.title.length ?? 0;
+    } catch {
+        return; // rechazarlo también es correcto
+    }
+    assert.ok(titleLength < 1000, `título expandido a ${titleLength} caracteres`);
+});

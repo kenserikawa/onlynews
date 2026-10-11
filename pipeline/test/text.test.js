@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalize, tokens, decodeEntities, cleanText, truncate, hash } from '../text.js';
+import { normalize, tokens, stemTokens, decodeEntities, cleanText, truncate, hash } from '../text.js';
 
 test('normalize quita acentos, puntuación y mayúsculas', () => {
     assert.equal(normalize('¡Última hora: Sánchez, en el Congreso!'), 'ultima hora sanchez en el congreso');
@@ -35,4 +35,10 @@ test('hash es determinista y alfanumérico', () => {
     assert.equal(hash('https://a.es/1'), hash('https://a.es/1'));
     assert.notEqual(hash('https://a.es/1'), hash('https://a.es/2'));
     assert.match(hash('x'), /^[0-9a-z]+$/);
+});
+
+test('stemTokens recorta a raíces de 5 letras y quita fechas y números para el agrupado', () => {
+    assert.deepEqual(stemTokens('Trump anuncia una tregua energética el lunes 12 de octubre', 'es'), ['trump', 'anunc', 'tregu', 'energ']);
+    assert.deepEqual(stemTokens('Energy truce announced on Monday, October 12', 'en'), ['energ', 'truce', 'annou']);
+    assert.deepEqual(stemTokens('alto el fuego energético', 'es'), stemTokens('alto el fuego para la energía', 'es'));
 });

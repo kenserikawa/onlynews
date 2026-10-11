@@ -33,6 +33,19 @@ export function tokens(text, lang) {
         .filter(word => word && !stop.has(word) && (word.length >= 3 || /^\d+$/.test(word)));
 }
 
+// Fechas y números unen historias distintas del mismo día («12 de octubre»), así que el
+// agrupado los ignora; y recortar a 5 letras junta variantes (energía/energético).
+const DATE_WORDS = new Set(`lunes martes miercoles jueves viernes sabado domingo enero febrero marzo abril mayo junio
+    julio agosto septiembre octubre noviembre diciembre monday tuesday wednesday thursday friday saturday sunday january
+    february march april june july august september october november december`.split(/\s+/));
+const STEM_LENGTH = 5;
+
+export function stemTokens(text, lang) {
+    return tokens(text, lang)
+        .filter(word => !DATE_WORDS.has(word) && !/^\d+$/.test(word))
+        .map(word => word.slice(0, STEM_LENGTH));
+}
+
 const ENTITIES = {
     amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', hellip: '…', ndash: '–', mdash: '—',
     laquo: '«', raquo: '»', lsquo: '‘', rsquo: '’', ldquo: '“', rdquo: '”', euro: '€', iexcl: '¡',

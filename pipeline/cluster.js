@@ -1,8 +1,8 @@
 // Agrupa artículos de un mismo mercado en historias.
-// TF-IDF sobre título (peso doble) + entradilla, similitud coseno y un agrupado
+// TF-IDF sobre raíces del título (peso doble) + entradilla, similitud coseno y un agrupado
 // aglomerativo por average-link: se recorren las parejas de mayor a menor similitud y
 // dos grupos se unen solo si la similitud media entre todos sus miembros supera el umbral.
-import { tokens } from './text.js';
+import { stemTokens } from './text.js';
 
 function vectorize(docs) {
     const df = new Map();
@@ -52,8 +52,8 @@ export function clusterArticles(articles, { lang, threshold = 0.32, maxSpanHours
     if (!n) return [];
 
     const docs = items.map(article => {
-        const title = tokens(article.title, lang);
-        return [...title, ...title, ...tokens(article.summary ?? '', lang)];
+        const title = stemTokens(article.title, lang);
+        return [...title, ...title, ...stemTokens(article.summary ?? '', lang)];
     });
     const sims = pairSimilarities(vectorize(docs));
     const sim = (i, j) => (i === j ? 1 : sims.get(i < j ? i * n + j : j * n + i) ?? 0);

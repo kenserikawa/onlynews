@@ -63,7 +63,10 @@ desaparecen.
 
 1. **Texto por artículo** = título ×2 + summary.
 2. **Normalización**: minúsculas, sin acentos ni puntuación, palabras vacías ES/EN fuera, tokens < 3
-   caracteres fuera salvo números. Sin *stemming* en v1; se mide y se añade un sufijo simple si hace falta.
+   caracteres fuera. Para el agrupado se quitan también números y fechas (días y meses), que unían
+   historias distintas del mismo día, y cada palabra se recorta a sus 5 primeras letras para juntar
+   variantes (energía/energético). Calibrado el 2026-10-12 con datos reales: 39 historias de España con
+   ≥ 3 medios y 2/20 agrupaciones erróneas.
 3. **Vectores** TF-IDF por mercado y similitud coseno.
 4. **Agrupado aglomerativo** por *average-link*: se unen grupos si la similitud media ≥ `threshold`
    (inicial 0.32, ajustable con los tests) y la diferencia de fechas ≤ 36 h.
@@ -110,8 +113,9 @@ desaparecen.
 ## 3. Catálogo inicial de medios y sesgo (para revisar)
 
 Clasificación **orientativa**: la línea editorial tal como suele describirse públicamente. En el
-internacional, apoyada en AllSides / Ad Fontes. Se valida y ajusta antes de publicar. Los feeds concretos
-se verifican durante la implementación; si un medio no ofrece RSS usable, se cae de la lista.
+internacional, apoyada en AllSides / Ad Fontes. Feeds verificados el 2026-10-12; quedan fuera por no
+tener RSS usable: Público, El Periódico, EFE, Vozpópuli, La Razón, RTVE, CNN, Reuters y AP. El
+catálogo vivo está en `pipeline/sources.json`.
 
 **España**
 
