@@ -13,12 +13,13 @@ import { renderSources } from './views/sources.js';
 const MARKETS = ['es', 'intl'];
 // Iconos SVG fijos (no son datos externos), porque los glifos ◐☀☾ faltan en muchas fuentes.
 const ICON = body => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
-const THEMES = {
-    auto: [ICON('<circle cx="12" cy="12" r="9"/><path d="M12 3v18a9 9 0 0 0 0-18z" fill="currentColor"/>'), 'Tema automático'],
-    light: [ICON('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'), 'Tema claro'],
-    dark: [ICON('<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>'), 'Tema oscuro'],
+// El botón muestra el tema al que se pasa al pulsarlo.
+const THEME_ICONS = {
+    light: ICON('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
+    dark: ICON('<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>'),
 };
-const NEXT_THEME = { auto: 'light', light: 'dark', dark: 'auto' };
+const THEME_NAMES = { light: 'claro', dark: 'oscuro' };
+const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
 
 const app = document.getElementById('app');
 const searchForm = document.querySelector('.search');
@@ -27,13 +28,20 @@ const monitor = document.getElementById('monitor');
 let renderToken = 0;
 let monitorToken = 0;
 
+// «auto» sigue al sistema hasta el primer clic; desde ahí el botón alterna claro/oscuro
+// según lo que se ve, sin pasos intermedios que no cambian nada en pantalla.
+function effectiveTheme(theme) {
+    if (theme !== 'auto') return theme;
+    return systemDark.matches ? 'dark' : 'light';
+}
+
 function applyTheme(theme) {
     if (theme === 'auto') delete document.documentElement.dataset.theme;
     else document.documentElement.dataset.theme = theme;
-    const [icon, label] = THEMES[theme];
-    themeButton.innerHTML = icon;
-    themeButton.title = label;
-    themeButton.setAttribute('aria-label', `${label}. Cambiar tema`);
+    const next = effectiveTheme(theme) === 'dark' ? 'light' : 'dark';
+    themeButton.innerHTML = THEME_ICONS[next];
+    themeButton.title = `Cambiar a tema ${THEME_NAMES[next]}`;
+    themeButton.setAttribute('aria-label', `Cambiar a tema ${THEME_NAMES[next]}`);
 }
 
 function parseRoute() {
@@ -149,11 +157,12 @@ searchForm.addEventListener('submit', event => {
 });
 
 themeButton.addEventListener('click', () => {
-    prefs.theme = NEXT_THEME[prefs.theme];
+    prefs.theme = effectiveTheme(prefs.theme) === 'dark' ? 'light' : 'dark';
     applyTheme(prefs.theme);
 });
 
 applyTheme(prefs.theme);
+systemDark.addEventListener('change', () => applyTheme(prefs.theme));
 window.addEventListener('hashchange', route);
 route();
 showFeedStatus();
