@@ -57,6 +57,30 @@ export function storyCard(story, market) {
                 storyMeta(story))));
 }
 
+// Grande del bloque hero de los resultados: foto arriba, titular grande y barra.
+export function heroLead(story, market) {
+    const summary = story.summary ?? story.articles[0]?.summary;
+    return h('article', { class: 'card hero-lead' },
+        h('a', { class: 'story-link', href: storyHref(story, market) },
+            storyImage(story.image, 'card-img'),
+            h('div', { class: 'card-body' },
+                h('h3', { class: 'story-title' }, story.title),
+                summary ? h('p', { class: 'lead-summary' }, summary) : null,
+                coverageBar(story.coverage, { large: true }),
+                storyMeta(story))));
+}
+
+// Pequeña: titular, metadatos y barra; miniatura solo si hay foto.
+export function storySmall(story, market) {
+    return h('article', { class: 'small' },
+        h('a', { class: `story-link${story.image ? ' has-thumb' : ''}`, href: storyHref(story, market) },
+            storyImage(story.image, 'small-thumb'),
+            h('div', { class: 'small-body' },
+                h('h3', { class: 'story-title' }, story.title),
+                coverageBar(story.coverage),
+                storyMeta(story))));
+}
+
 export function storyRow(story, market, { compact = false } = {}) {
     return h('li', { class: 'row' },
         h('a', { class: 'story-link', href: storyHref(story, market) },
