@@ -89,7 +89,7 @@ async function show(viewPromise, { keepScroll = false } = {}) {
 function applySatire() {
     document.body.classList.toggle('is-satire', prefs.satire);
     satireButton.setAttribute('aria-pressed', String(prefs.satire));
-    satireButton.title = prefs.satire ? 'Desactivar modo coña' : 'Activar modo coña';
+    satireButton.title = prefs.satire ? 'Desactivar modo satírico' : 'Activar modo satírico';
     tagline.textContent = t('tagline');
     tagline.hidden = !tagline.textContent;
 }
