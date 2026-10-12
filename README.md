@@ -9,7 +9,7 @@ Next updates coming soon
 
 ## Static version (GitHub Pages)
 **https://kenserikawa.github.io/onlynews/**: a Ground News–style aggregator. Stories are grouped across
-~37 Spanish and international outlets, with a left/center/right coverage bar, blindspots and a side-by-side
+~63 Spanish and international outlets, with a left/center/right coverage bar, blindspots and a side-by-side
 comparison of how each outlet covers the story.
 
 - `pipeline/`: Node script run hourly by `.github/workflows/pages.yml`. It fetches the RSS feeds listed in

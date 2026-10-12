@@ -4,7 +4,7 @@
 const USER_AGENT = 'Mozilla/5.0 (compatible; onlynews-bot/1.0)';
 const ACCEPT = 'application/rss+xml, application/atom+xml, application/xml;q=0.9, text/xml;q=0.9, */*;q=0.8';
 
-export async function fetchFeeds(feeds, { fetchImpl = globalThis.fetch, concurrency = 8, timeoutMs = 10_000 } = {}) {
+export async function fetchFeeds(feeds, { fetchImpl = globalThis.fetch, concurrency = 8, timeoutMs = 15_000 } = {}) {
     const results = new Array(feeds.length);
     let next = 0;
 
