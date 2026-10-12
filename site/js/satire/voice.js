@@ -10,6 +10,8 @@ export const VOICE = {
     saved: { normal: 'Guardadas', cona: 'Para leer nunca' },
     savedEmpty: { normal: 'Guarda historias desde su ficha para leerlas luego.', cona: 'Guarda aquí lo que nunca vas a leer.' },
     footerFeeds: { normal: '{ok}/{n} fuentes actualizadas', cona: '{ok}/{n} fuentes actualizadas. Las otras {rest}, en el café' },
+    footerFeedsOne: { normal: '{ok}/{n} fuentes actualizadas', cona: '{ok}/{n} fuentes actualizadas. La otra, en el café' },
+    footerFeedsAll: { normal: '{ok}/{n} fuentes actualizadas', cona: '{ok}/{n} fuentes actualizadas. Ni una en el café: sospechoso' },
     searchEmpty: { normal: 'No hay historias que coincidan.', cona: 'Nada. Ni siquiera un clickbait.' },
     awardsTitle: { normal: 'Premios del día', cona: 'Premios del día' },
     awardsIntro: { normal: 'Rankings calculados con los titulares de hoy.', cona: 'La prensa española, evaluada con datos. Que no se enfade nadie: son sus propios titulares.' },

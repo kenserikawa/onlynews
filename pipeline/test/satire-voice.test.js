@@ -13,6 +13,8 @@ test('say rellena variables y elige la voz', () => {
     assert.equal(say('footerFeeds', 'normal', { ok: 61, n: 63 }), '61/63 fuentes actualizadas');
     assert.equal(say('footerFeeds', 'cona', { ok: 61, n: 63, rest: 2 }), '61/63 fuentes actualizadas. Las otras 2, en el café');
     assert.equal(say('topSection', 'cona'), 'Lo que copia todo el mundo');
+    assert.equal(say('footerFeedsOne', 'cona', { ok: 62, n: 63 }), '62/63 fuentes actualizadas. La otra, en el café');
+    assert.equal(say('footerFeedsAll', 'cona', { ok: 63, n: 63 }), '63/63 fuentes actualizadas. Ni una en el café: sospechoso');
     assert.throws(() => say('noExiste', 'normal'), /noExiste/);
 });
 

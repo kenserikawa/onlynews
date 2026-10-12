@@ -23,6 +23,10 @@ test('isSensitiveTitle detecta sucesos con víctimas', () => {
         'Naufragio frente a Yibuti: 139 migrantes ahogados',
         'Detenido por la agresión sexual a una menor',
         'Man killed in shooting outside Chicago school',
+        'El ataque hutí al aeropuerto de Riad tensa el Pérsico',
+        'Rusia bombardea Járkov con misiles',
+        'Trump anuncia un alto el fuego en la guerra de Ucrania',
+        'Israeli airstrike hits Gaza hospital',
     ]) assert.equal(isSensitiveTitle(title), true, title);
 });
 

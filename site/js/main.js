@@ -2,13 +2,16 @@
 import { prefs } from './prefs.js';
 import { loadJson, loadMarket } from './data.js';
 import { marketSummary } from './coverage.js';
-import { MARKET_NAMES } from './components.js';
+import { MARKET_NAMES, t } from './components.js';
+import { scoreLine } from './satire/voice.js';
 import { h, timeAgo } from './dom.js';
 import { renderHome } from './views/home.js';
 import { renderStory } from './views/story.js';
 import { renderSearch } from './views/search.js';
 import { renderSaved } from './views/saved.js';
 import { renderSources } from './views/sources.js';
+import { renderAwards } from './views/awards.js';
+import { renderBingo } from './views/bingo.js';
 
 const MARKETS = ['es', 'intl'];
 // Iconos SVG fijos (no son datos externos), porque los glifos ◐☀☾ faltan en muchas fuentes.
@@ -25,6 +28,8 @@ const app = document.getElementById('app');
 const searchForm = document.querySelector('.search');
 const themeButton = document.getElementById('theme-toggle');
 const monitor = document.getElementById('monitor');
+const satireButton = document.getElementById('satire-toggle');
+const tagline = document.getElementById('tagline');
 let renderToken = 0;
 let monitorToken = 0;
 
@@ -57,10 +62,13 @@ function setActiveMarket(market) {
     }
 }
 
-async function show(viewPromise) {
+async function show(viewPromise, { keepScroll = false } = {}) {
     const token = ++renderToken;
+    // Al repintar la misma ruta (cambio de modo) se mantiene la vista hasta tener la nueva,
+    // para no encoger la página y perder el scroll.
+    const scrollY = window.scrollY;
     app.setAttribute('aria-busy', 'true');
-    app.replaceChildren(h('p', { class: 'loading' }, 'Cargando…'));
+    if (!keepScroll) app.replaceChildren(h('p', { class: 'loading' }, 'Cargando…'));
     try {
         const node = await viewPromise;
         if (token !== renderToken) return;
@@ -74,7 +82,16 @@ async function show(viewPromise) {
     } finally {
         if (token === renderToken) app.removeAttribute('aria-busy');
     }
-    window.scrollTo(0, 0);
+    window.scrollTo(0, keepScroll ? scrollY : 0);
+}
+
+// Modo coña: marca (pegatina y lema), estado del interruptor y voz de los textos.
+function applySatire() {
+    document.body.classList.toggle('is-satire', prefs.satire);
+    satireButton.setAttribute('aria-pressed', String(prefs.satire));
+    satireButton.title = prefs.satire ? 'Desactivar modo coña' : 'Activar modo coña';
+    tagline.textContent = t('tagline');
+    tagline.hidden = !tagline.textContent;
 }
 
 // Franja «monitor» bajo la cabecera: medios con artículos, reparto por lado y blindspots
@@ -86,12 +103,20 @@ async function showMonitor(market) {
         if (token !== monitorToken) return;
         const summary = marketSummary(stories, id => sourcesById[id]?.bias ?? null);
         const item = (side, text) => h('span', { class: `monitor-item${side ? ` monitor-item--${side}` : ''}` }, text);
-        monitor.replaceChildren(h('div', { class: 'wrap monitor-inner' },
-            item(null, `Monitor · ${MARKET_NAMES[market]} · ${summary.sources} medios`),
-            item('left', `Izq ${summary.share.left}%`),
-            item('center', `Centro ${summary.share.center}%`),
-            item('right', `Der ${summary.share.right}%`),
-            h('span', { class: 'monitor-alert' }, `${summary.blindspots} ${summary.blindspots === 1 ? 'blindspot' : 'blindspots'}`)));
+        const blindspots = h('span', { class: 'monitor-alert' }, `${summary.blindspots} ${summary.blindspots === 1 ? 'blindspot' : 'blindspots'}`);
+        monitor.replaceChildren(prefs.satire
+            ? h('div', { class: 'wrap monitor-inner' },
+                item(null, t('monitor', { market: MARKET_NAMES[market], n: summary.sources })),
+                h('span', { class: 'monitor-score' }, scoreLine(summary.share)),
+                h('a', { class: 'monitor-link', href: `#/${market}/premios` }, 'Premios'),
+                h('a', { class: 'monitor-link', href: `#/${market}/bingo` }, 'Bingo'),
+                blindspots)
+            : h('div', { class: 'wrap monitor-inner' },
+                item(null, t('monitor', { market: MARKET_NAMES[market], n: summary.sources })),
+                item('left', `Izq ${summary.share.left}%`),
+                item('center', `Centro ${summary.share.center}%`),
+                item('right', `Der ${summary.share.right}%`),
+                blindspots));
         monitor.hidden = false;
     } catch {
         if (token === monitorToken) monitor.hidden = true;
@@ -103,13 +128,14 @@ function hideMonitor() {
     monitor.hidden = true;
 }
 
-function route() {
+function route({ keepScroll = false } = {}) {
     const { parts, params } = parseRoute();
+    const opts = { keepScroll };
     if (parts[0] === 'fuentes') {
         setActiveMarket(null);
         hideMonitor();
         searchForm.q.value = '';
-        return show(renderSources());
+        return show(renderSources(), opts);
     }
     const market = MARKETS.includes(parts[0]) ? parts[0] : null;
     if (!market) {
@@ -123,10 +149,20 @@ function route() {
     const query = params.get('q') ?? '';
     searchForm.q.value = sub === 'buscar' ? query : '';
 
-    if (!sub) return show(renderHome(market));
-    if (sub === 'buscar') return show(renderSearch(market, query));
-    if (sub === 'guardadas') return show(renderSaved(market));
-    if (sub.startsWith('s-')) return show(renderStory(market, sub));
+    if (sub === 'premios' || sub === 'bingo') {
+        // Un enlace compartido a premios o bingo activa el modo: esas páginas son el chiste.
+        if (!prefs.satire) {
+            prefs.satire = true;
+            applySatire();
+            showMonitor(market);
+            showFeedStatus();
+        }
+        return show(sub === 'premios' ? renderAwards(market) : renderBingo(market), opts);
+    }
+    if (!sub) return show(renderHome(market), opts);
+    if (sub === 'buscar') return show(renderSearch(market, query), opts);
+    if (sub === 'guardadas') return show(renderSaved(market), opts);
+    if (sub.startsWith('s-')) return show(renderStory(market, sub), opts);
     return show(Promise.resolve(h('div', { class: 'notice' },
         h('h1', {}, 'Página no encontrada'),
         h('p', {}, h('a', { href: `#/${market}` }, 'Volver a la portada')))));
@@ -137,7 +173,9 @@ async function showFeedStatus() {
     try {
         const meta = await loadJson('meta');
         const ok = meta.feeds.filter(feed => feed.ok).length;
-        status.textContent = `${ok}/${meta.feeds.length} fuentes actualizadas · ${timeAgo(meta.generatedAt)}`;
+        const n = meta.feeds.length;
+        const key = n - ok === 0 ? 'footerFeedsAll' : n - ok === 1 ? 'footerFeedsOne' : 'footerFeeds';
+        status.textContent = `${t(key, { ok, n, rest: n - ok })} · ${timeAgo(meta.generatedAt)}`;
     } catch {
         status.textContent = '';
     }
@@ -161,7 +199,15 @@ themeButton.addEventListener('click', () => {
     applyTheme(prefs.theme);
 });
 
+satireButton.addEventListener('click', () => {
+    prefs.satire = !prefs.satire;
+    applySatire();
+    route({ keepScroll: true });
+    showFeedStatus();
+});
+
 applyTheme(prefs.theme);
+applySatire();
 systemDark.addEventListener('change', () => applyTheme(prefs.theme));
 window.addEventListener('hashchange', route);
 route();
