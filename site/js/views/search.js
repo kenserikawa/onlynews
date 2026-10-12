@@ -1,7 +1,7 @@
 import { h, fold, plural } from '../dom.js';
 import { loadMarket } from '../data.js';
 import { composeBlocks } from '../layout.js';
-import { storyRow, storyCard, heroLead, storySmall, MARKET_NAMES } from '../components.js';
+import { t, storyRow, storyCard, heroLead, storySmall, MARKET_NAMES } from '../components.js';
 
 // Cada plantilla de layout.js tiene aquí su forma de pintarse; las filas seguidas
 // se agrupan en una sola lista.
@@ -45,5 +45,5 @@ export async function renderSearch(market, query) {
             `Busca en las historias de las últimas 48 h · ${MARKET_NAMES[market]}`),
         matches.length
             ? h('div', { class: 'results' }, renderBlocks(composeBlocks(matches), market))
-            : h('p', { class: 'empty', style: 'margin-top:20px' }, needle ? 'No hay historias que coincidan.' : 'Escribe algo en el buscador.'));
+            : h('p', { class: 'empty', style: 'margin-top:20px' }, needle ? t('searchEmpty') : 'Escribe algo en el buscador.'));
 }

@@ -2,7 +2,7 @@ import { h, safeUrl, timeAgo } from '../dom.js';
 import { loadMarket } from '../data.js';
 import { prefs } from '../prefs.js';
 import { SIDE_LABELS, BIAS_LABELS, sideOf } from '../coverage.js';
-import { coverageBar, storyMeta, storyImage } from '../components.js';
+import { coverageBar, storyMeta, storyImage, kickerLine } from '../components.js';
 
 function missingStory(market, id) {
     const saved = prefs.saved()[id];
@@ -92,6 +92,7 @@ export async function renderStory(market, id) {
         h('a', { class: 'back', href: `#/${market}` }, '← Portada'),
         h('header', { class: 'story-head' },
             h('div', { class: 'story-head-text' },
+                kickerLine(story),
                 h('h1', {}, story.title),
                 story.summary ? h('p', { class: 'lead-summary' }, story.summary) : null,
                 coverageBar(story.coverage, { large: true }),

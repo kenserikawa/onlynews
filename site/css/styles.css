@@ -282,3 +282,6 @@ main:focus { outline: none; }
 
 /* Recuadro que sustituye a una foto que no carga */
 .img-fallback { display: block; background-color: var(--surface-2); background-image: repeating-linear-gradient(-45deg, transparent 0 14px, color-mix(in srgb, var(--ink) 14%, transparent) 14px 17px); }
+
+/* Modo coña: antetítulo satírico */
+.kicker { justify-self: start; display: inline-block; margin: 0 0 2px; padding: 3px 7px; background: var(--accent); color: var(--on-accent); border: 2px solid var(--ink); font: 700 11px/1.3 var(--mono); text-transform: uppercase; letter-spacing: .03em; overflow-wrap: anywhere; }

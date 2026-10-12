@@ -2,6 +2,7 @@
 import { h, safeUrl, timeAgo, plural } from './dom.js';
 import { SIDES, SIDE_LABELS } from './coverage.js';
 import { prefs } from './prefs.js';
+import { say } from './satire/voice.js';
 
 export const MARKET_NAMES = { es: 'España', intl: 'Internacional' };
 const SHORT = { left: 'I', center: 'C', right: 'D' };
@@ -36,12 +37,23 @@ export function storyImage(url, className) {
 
 const storyHref = (story, market) => `#/${market}/${story.id}`;
 
+// Textos de interfaz en la voz del modo actual (normal o coña).
+export function t(key, vars) {
+    return say(key, prefs.satire ? 'cona' : 'normal', vars);
+}
+
+// Antetítulo satírico de la historia (solo existe con el modo coña activo).
+export function kickerLine(story) {
+    return story.kicker ? h('p', { class: 'kicker' }, story.kicker) : null;
+}
+
 export function leadStory(story, market) {
     const summary = story.summary ?? story.articles[0]?.summary;
     return h('article', { class: 'lead' },
         h('a', { class: 'story-link', href: storyHref(story, market) },
             storyImage(story.image, 'lead-img'),
             h('div', { class: 'lead-body' },
+                kickerLine(story),
                 h('h2', { class: 'story-title' }, story.title),
                 summary ? h('p', { class: 'lead-summary' }, summary) : null,
                 coverageBar(story.coverage, { large: true }),
@@ -53,6 +65,7 @@ export function storyCard(story, market) {
         h('a', { class: 'story-link', href: storyHref(story, market) },
             storyImage(story.image, 'card-img'),
             h('div', { class: 'card-body' },
+                kickerLine(story),
                 h('h3', { class: 'story-title' }, story.title),
                 coverageBar(story.coverage),
                 storyMeta(story))));
@@ -65,6 +78,7 @@ export function heroLead(story, market) {
         h('a', { class: 'story-link', href: storyHref(story, market) },
             storyImage(story.image, 'card-img'),
             h('div', { class: 'card-body' },
+                kickerLine(story),
                 h('h3', { class: 'story-title' }, story.title),
                 summary ? h('p', { class: 'lead-summary' }, summary) : null,
                 coverageBar(story.coverage, { large: true }),
@@ -77,6 +91,7 @@ export function storySmall(story, market) {
         h('a', { class: `story-link${story.image ? ' has-thumb' : ''}`, href: storyHref(story, market) },
             storyImage(story.image, 'small-thumb'),
             h('div', { class: 'small-body' },
+                kickerLine(story),
                 h('h3', { class: 'story-title' }, story.title),
                 coverageBar(story.coverage),
                 storyMeta(story))));
@@ -86,6 +101,7 @@ export function storyRow(story, market, { compact = false } = {}) {
     return h('li', { class: 'row' },
         h('a', { class: 'story-link', href: storyHref(story, market) },
             h('div', { class: 'row-text' },
+                kickerLine(story),
                 h('h3', { class: 'story-title' }, story.title),
                 storyMeta(story)),
             compact ? null : coverageBar(story.coverage)));
@@ -107,8 +123,8 @@ export function blindspotPanel(stories, market) {
         ];
     };
     return h('section', { class: 'panel panel--blindspot', 'aria-labelledby': 'blindspots-h' },
-        h('h2', { id: 'blindspots-h' }, 'Blindspots'),
-        h('p', { class: 'hint' }, 'Historias que cubre casi solo un lado.'),
+        h('h2', { id: 'blindspots-h' }, t('blindspots')),
+        h('p', { class: 'hint' }, t('blindspotsHint')),
         group('left', 'Solo la izquierda'),
         group('right', 'Solo la derecha'));
 }
@@ -125,8 +141,8 @@ export function savedPanel(stories, market) {
                 h('span', { class: 'mini-title' }, entry.title),
                 h('span', { class: 'mini-meta' }, 'Ya no está en portada'))));
     return h('section', { class: 'panel', 'aria-labelledby': 'saved-h' },
-        h('h2', { id: 'saved-h' }, 'Guardadas'),
-        items.length ? h('ol', { class: 'mini-list' }, items) : h('p', { class: 'empty' }, 'Guarda historias desde su ficha para leerlas luego.'),
+        h('h2', { id: 'saved-h' }, t('saved')),
+        items.length ? h('ol', { class: 'mini-list' }, items) : h('p', { class: 'empty' }, t('savedEmpty')),
         saved.length ? h('a', { class: 'panel-link', href: `#/${market}/guardadas` }, `Ver todas (${saved.length})`) : null);
 }
 

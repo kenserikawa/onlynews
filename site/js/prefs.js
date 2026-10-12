@@ -25,6 +25,9 @@ export const prefs = {
     },
     set theme(value) { write('theme', value); },
 
+    get satire() { return read('satire', false) === true; },
+    set satire(value) { write('satire', Boolean(value)); },
+
     get market() { return read('market', 'es'); },
     set market(value) { write('market', value); },
 
