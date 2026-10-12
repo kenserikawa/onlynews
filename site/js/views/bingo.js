@@ -21,7 +21,7 @@ export async function renderBingo(market) {
                 h('span', { class: 'bingo-phrase' }, cell.phrase),
                 cell.hit ? h('span', { class: 'bingo-hit' },
                     url ? h('a', { href: url, target: '_blank', rel: 'noopener noreferrer', title: cell.hit.title }, name(cell.hit.sourceId)) : name(cell.hit.sourceId),
-                    ` · ${hhmm(cell.hit.publishedAt)}`) : null);
+                    h('span', { class: 'bingo-time' }, ` · ${hhmm(cell.hit.publishedAt)}`)) : null);
         })),
         cells.some(cell => cell.hit) ? null : h('p', { class: 'empty' }, t('bingoEmpty')));
 }

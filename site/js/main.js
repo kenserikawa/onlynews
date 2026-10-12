@@ -202,8 +202,14 @@ themeButton.addEventListener('click', () => {
 satireButton.addEventListener('click', () => {
     prefs.satire = !prefs.satire;
     applySatire();
-    route({ keepScroll: true });
     showFeedStatus();
+    // Premios y bingo solo existen en modo coña: al apagarlo desde ahí se vuelve a la portada.
+    const { parts } = parseRoute();
+    if (!prefs.satire && (parts[1] === 'premios' || parts[1] === 'bingo')) {
+        location.hash = `#/${parts[0]}`;
+        return;
+    }
+    route({ keepScroll: true });
 });
 
 applyTheme(prefs.theme);

@@ -1,6 +1,6 @@
 import { h } from '../dom.js';
 import { loadMarket } from '../data.js';
-import { t, MARKET_NAMES, leadStory, storyCard, storyRow, blindspotPanel, savedPanel, methodPanel } from '../components.js';
+import { t, MARKET_NAMES, leadStory, storyCard, storyRow, blindspotPanel, savedPanel, methodPanel, satirePanel } from '../components.js';
 
 const GRID_SIZE = 6;
 
@@ -33,6 +33,7 @@ export async function renderHome(market) {
                 h('summary', {}, `${t('singles')} (${otherSingles.length})`),
                 h('ol', { class: 'story-list story-list--compact' }, otherSingles.map(story => storyRow(story, market, { compact: true })))) : null),
         h('aside', { class: 'home-aside' },
+            satirePanel(market),
             blindspotPanel(multi, market),
             savedPanel(stories, market),
             methodPanel()));

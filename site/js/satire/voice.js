@@ -14,7 +14,7 @@ export const VOICE = {
     footerFeedsAll: { normal: '{ok}/{n} fuentes actualizadas', cona: '{ok}/{n} fuentes actualizadas. Ni una en el café: sospechoso' },
     searchEmpty: { normal: 'No hay historias que coincidan.', cona: 'Nada. Ni siquiera un clickbait.' },
     awardsTitle: { normal: 'Premios del día', cona: 'Premios del día' },
-    awardsIntro: { normal: 'Rankings calculados con los titulares de hoy.', cona: 'La prensa española, evaluada con datos. Que no se enfade nadie: son sus propios titulares.' },
+    awardsIntro: { normal: 'Rankings calculados con los titulares de hoy.', cona: 'La {press}, evaluada con datos. Que no se enfade nadie: son sus propios titulares.' },
     awardsEmpty: { normal: 'Hoy no hay premios.', cona: 'Hoy la prensa se ha portado bien. Vuelva mañana.' },
     bingoTitle: { normal: 'Bingo del titular', cona: 'Bingo del titular' },
     bingoIntro: { normal: 'Clichés de hoy en los titulares.', cona: 'Un cartón de clichés que se marca solo. Gana el medio que antes cante línea.' },

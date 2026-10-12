@@ -6,8 +6,8 @@ export const CLICHES = {
     es: ['última hora', 'en directo', 'lo que se sabe', 'las claves', 'zasca', 'estalla', 'polémica', 'vídeo', 'viral',
         'insólito', 'así es', 'esto es lo que', 'atención', 'sorpresa', 'histórico', 'brutal', 'revienta', 'arrasa',
         'hilo', 'exclusiva', 'confirmado', 'alerta', 'bombazo', 'por qué'],
-    en: ['breaking', 'live', 'what we know', 'explainer', 'slams', 'erupts', 'controversy', 'video', 'viral', 'shocking',
-        'here s', 'everything you need', 'watch', 'surprise', 'historic', 'brutal', 'blasts', 'sweeps', 'thread',
+    en: ['breaking', 'live', 'what we know', 'explainer', 'slams', 'backlash', 'controversy', 'video', 'viral', 'shocking',
+        "here's", 'everything you need', 'watch', 'surprise', 'historic', 'brutal', 'doubles down', 'sweeps', 'thread',
         'exclusive', 'confirmed', 'alert', 'bombshell', 'why'],
 };
 const LINES = [

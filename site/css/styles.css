@@ -310,7 +310,7 @@ main:focus { outline: none; }
 .bingo-hit { font: 400 10px/1.2 var(--mono); }
 .bingo-hit a { color: inherit; }
 .bingo-line { margin-top: 12px; display: inline-block; padding: 6px 10px; background: var(--right); color: var(--on-right); border: 2px solid var(--ink); font: 700 14px/1 var(--mono); }
-@media (max-width: 560px) { .bingo { gap: 4px; } .bingo-cell { padding: 4px; } .bingo-hit { display: none; } }
+@media (max-width: 560px) { .bingo { gap: 4px; } .bingo-cell { padding: 4px; gap: 3px; } .bingo-hit { font-size: 8px; overflow-wrap: anywhere; } .bingo-time { display: none; } }
 @media (max-width: 420px) {
     .header-actions { gap: 6px; }
     .icon-btn { width: 40px; height: 40px; }

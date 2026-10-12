@@ -37,6 +37,18 @@ test('guerra de palabras lista los términos rivales tal como aparecen', () => {
     for (const term of ['tregua', 'alto el fuego', 'pacto']) assert.ok(k.includes(`«${term}»`), k);
 });
 
+test('la guerra de palabras exige términos de al menos dos medios distintos', () => {
+    const s = story('s-4b', [['r4', 'Energy ceasefire as export deal draws criticism'], ['l1', 'Otro titular sin términos']]);
+    assert.doesNotMatch(kickerFor(s, SOURCES) ?? '', /depende de a quién|ni en la palabra/);
+});
+
+test('el blindspot con un solo medio usa singular', () => {
+    const s = story('s-4c', [['r1', 'Feijóo y Ceuta'], ['u1', 'Feijóo y Ceuta, crónica'], ['u2', 'Ceuta y Feijóo']], { blindspot: 'right' });
+    s.coverage = { left: 0, center: 0, right: 1, unrated: 2 };
+    const k = kickerFor(s, { ...SOURCES, u1: { name: 'U1', bias: null }, u2: { name: 'U2', bias: null } });
+    assert.doesNotMatch(k, /1 medios/);
+});
+
 test('consenso con 6 o más medios y los tres lados', () => {
     const s = story('s-5', [['l1', 'El Papa será operado'], ['l2', 'Operarán al Papa'], ['c1', 'El Papa, al quirófano'], ['c2', 'Papa operado'], ['r1', 'El Papa se opera'], ['r2', 'Operación del Papa']]);
     assert.match(kickerFor(s, SOURCES), /6 medios|polarización/);

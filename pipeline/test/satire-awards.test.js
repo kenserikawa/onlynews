@@ -47,6 +47,14 @@ test('clickbait y grito detectan preguntas, fórmulas y exclamaciones', () => {
     assert.equal(awards.find(x => x.id === 'grito').winner, 'Diario B');
 });
 
+test('el grito no cuenta siglas, marcas ni números romanos', () => {
+    const quiet = ['Resultado ONCE: comprobar cupón', 'Récord de la RFEF', 'El siglo XVIII en el Prado', 'La UCAM gana', 'CCTV shows the scene', 'Los CCOO y UGT convocan'];
+    const stories = many('a', 12, i => `${quiet[i % quiet.length]} ${i}`);
+    assert.equal(awardsFor(stories, SOURCES).find(x => x.id === 'grito'), undefined);
+    const loud = many('b', 10, i => (i < 3 ? `ÚLTIMA HORA: dimite el ministro ${i}` : i < 6 ? `WATCH: Biden on stage ${i}` : `Normal ${i}`));
+    assert.equal(awardsFor(loud, SOURCES).find(x => x.id === 'grito')?.winner, 'Diario B');
+});
+
 test('consenso elige la historia con más medios y los tres lados', () => {
     const s = story('s-cons', [art('a', 'El Papa será operado'), art('b', 'Operan al Papa'), art('c', 'Papa, al quirófano')],
         { coverage: { left: 1, center: 1, right: 1, unrated: 0 } });

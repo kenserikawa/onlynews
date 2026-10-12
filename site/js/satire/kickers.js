@@ -24,11 +24,19 @@ function hasTerm(normalizedTitle, term) {
     return normalizedTitle.split(' ').some(word => word.startsWith(target));
 }
 
-function wordWar(titles) {
+// Solo es «guerra» si al menos dos términos rivales vienen de medios distintos.
+function wordWar(articles) {
     let best = [];
     for (const group of WORD_WARS) {
-        const found = group.filter(term => titles.some(title => hasTerm(title, term)));
-        if (found.length >= 2 && found.length > best.length) best = found;
+        const sourcesByTerm = new Map();
+        for (const term of group) {
+            const sources = new Set(articles.filter(article => hasTerm(normalizeTitle(article.title), term)).map(article => article.sourceId));
+            if (sources.size) sourcesByTerm.set(term, sources);
+        }
+        const found = [...sourcesByTerm.keys()];
+        const crossOutlet = found.some(a => found.some(b => a !== b
+            && [...sourcesByTerm.get(a)].some(sa => [...sourcesByTerm.get(b)].some(sb => sa !== sb))));
+        if (found.length >= 2 && crossOutlet && found.length > best.length) best = found;
     }
     return best.slice(0, 3);
 }
@@ -58,7 +66,9 @@ export function kickerFor(story, sourcesById) {
         const side = story.blindspot;
         const other = OTHER[side];
         return pick([
-            `Solo se enteran ${story.coverage[side]} medios de ${SIDE_NAME[side]}. ${cap(SIDE_NAME[other])}, de puente`,
+            story.coverage[side] === 1
+                ? `Solo se entera un medio de ${SIDE_NAME[side]}. ${cap(SIDE_NAME[other])}, de puente`
+                : `Solo se enteran ${story.coverage[side]} medios de ${SIDE_NAME[side]}. ${cap(SIDE_NAME[other])}, de puente`,
             `${cap(SIDE_NAME[other])} sigue sin confirmar que esto haya pasado`,
             `Noticia exclusiva para lectores de ${SIDE_NAME[side]}`,
         ], seed);
@@ -72,7 +82,7 @@ export function kickerFor(story, sourcesById) {
         ], seed);
     }
 
-    const terms = wordWar(story.articles.map(article => normalizeTitle(article.title)));
+    const terms = wordWar(story.articles);
     if (terms.length >= 2) {
         return pick([
             `${quoteList(terms)}: depende de a quién preguntes`,

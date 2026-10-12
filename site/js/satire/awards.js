@@ -10,8 +10,8 @@ const LISTS = {
         clickbaitStart: ['asi ', 'esto es lo que', 'lo que se sabe', 'por que', 'que es ', 'quien es', 'las claves'],
     },
     en: {
-        combat: ['slam', 'blast', 'destroy', 'chaos', 'outrage', 'fury', 'furious', 'meltdown', 'bombshell', 'scathing',
-            'rips', 'erupt', 'savage', 'humiliat', 'brutal', 'explosive'],
+        combat: ['slam', 'chaos', 'outrage', 'fury', 'furious', 'meltdown', 'bombshell', 'scathing', 'rips', 'savage',
+            'humiliat', 'brutal', 'lashes out', 'torches'],
         clickbaitStart: ['here s', 'what we know', 'why ', 'how ', 'this is', 'what to know', 'who is'],
     },
 };
@@ -20,7 +20,23 @@ const ACRONYMS = new Set(['PSOE', 'DANA', 'OTAN', 'NASA', 'UEFA', 'FIFA', 'COVID
 
 const isCombat = (title, list) => normalizeTitle(title).split(' ').some(word => list.combat.some(root => word.startsWith(root)));
 const isClickbait = (title, list) => /[¿?]/.test(title) || list.clickbaitStart.some(start => `${normalizeTitle(title)} `.startsWith(start));
-const isShout = title => /[¡!]/.test(title) || (title.match(/(?<!\p{L})\p{Lu}{4,}(?!\p{L})/gu) ?? []).some(word => !ACRONYMS.has(word));
+const ROMAN = /^[IVXLCDM]+$/;
+const SHOUT_LABELS = new Set(['ultima hora', 'en directo', 'directo', 'video', 'urgente', 'atencion', 'exclusiva', 'watch', 'live', 'breaking', 'exclusive']);
+// Grito: exclamaciones, una etiqueta en mayúsculas («ÚLTIMA HORA:», «WATCH:») o dos palabras
+// seguidas en mayúsculas. Las siglas sueltas (ONCE, RFEF, CCTV, XVIII…) no cuentan.
+function isShout(title) {
+    if (/[¡!]/.test(title)) return true;
+    const label = title.match(/^\s*([\p{Lu}\s]{4,}):/u);
+    if (label && SHOUT_LABELS.has(normalizeTitle(label[1]))) return true;
+    let run = 0;
+    for (const raw of title.split(/\s+/)) {
+        const word = raw.replace(/[^\p{L}]/gu, '');
+        const caps = word.length >= 3 && word === word.toUpperCase() && /\p{Lu}/u.test(word) && !ACRONYMS.has(word) && !ROMAN.test(word);
+        run = caps ? run + 1 : 0;
+        if (run >= 2) return true;
+    }
+    return false;
+}
 const evidenceOf = articles => articles.slice(0, 3).map(({ sourceId, title, url }) => ({ sourceId, title, url }));
 const nameOf = (sourcesById, id) => sourcesById[id]?.name ?? id;
 

@@ -146,6 +146,15 @@ export function savedPanel(stories, market) {
         saved.length ? h('a', { class: 'panel-link', href: `#/${market}/guardadas` }, `Ver todas (${saved.length})`) : null);
 }
 
+// Accesos a Premios y Bingo en el lateral de la portada, solo con el modo coña.
+export function satirePanel(market) {
+    if (!prefs.satire) return null;
+    return h('section', { class: 'panel panel--note', 'aria-labelledby': 'satire-h' },
+        h('h2', { id: 'satire-h' }, 'Hoy en la prensa'),
+        h('a', { href: `#/${market}/premios` }, 'Premios del día →'),
+        h('a', { href: `#/${market}/bingo` }, 'Bingo del titular →'));
+}
+
 export function methodPanel() {
     return h('section', { class: 'panel panel--note', 'aria-labelledby': 'method-h' },
         h('h2', { id: 'method-h' }, '¿Cómo medimos?'),

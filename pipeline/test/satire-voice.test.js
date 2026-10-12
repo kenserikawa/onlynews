@@ -18,6 +18,10 @@ test('say rellena variables y elige la voz', () => {
     assert.throws(() => say('noExiste', 'normal'), /noExiste/);
 });
 
+test('la intro de premios nombra la prensa de cada edición', () => {
+    assert.match(say('awardsIntro', 'cona', { press: 'prensa internacional' }), /prensa internacional/);
+});
+
 test('scoreLine narra el reparto como un partido', () => {
     assert.equal(scoreLine({ left: 24, center: 32, right: 44 }), 'La derecha gana 44–24 en la liga de publicar. El centro pide el VAR');
     assert.equal(scoreLine({ left: 50, center: 20, right: 30 }), 'La izquierda gana 50–30 en la liga de publicar. El centro pide el VAR');

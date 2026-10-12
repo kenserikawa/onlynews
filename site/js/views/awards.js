@@ -9,7 +9,7 @@ export async function renderAwards(market) {
     const awards = awardsFor(stories, sourcesById, { lang: market === 'intl' ? 'en' : 'es' });
     return h('section', { class: 'page satire-page' },
         h('h1', { class: 'page-title' }, `${t('awardsTitle')} · ${MARKET_NAMES[market]}`),
-        h('p', { class: 'hint' }, t('awardsIntro')),
+        h('p', { class: 'hint' }, t('awardsIntro', { press: market === 'intl' ? 'prensa internacional' : 'prensa española' })),
         awards.length
             ? h('div', { class: 'awards' }, awards.map(award => h('article', { class: 'award' },
                 h('p', { class: 'award-name' }, h('span', { 'aria-hidden': 'true' }, award.emoji), ` ${award.title}`),

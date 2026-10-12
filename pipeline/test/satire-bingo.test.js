@@ -40,6 +40,11 @@ test('las historias sensibles no marcan casillas', () => {
     assert.equal(result.cells[0].hit, null);
 });
 
+test('las frases se muestran bien escritas (sin «here s»)', () => {
+    assert.ok(CLICHES.en.includes("here's"));
+    assert.ok(CLICHES.en.every(phrase => !/\bs$/.test(phrase.replace("here's", ''))));
+});
+
 test('en inglés usa su propia bolsa', () => {
     assert.ok(bingoFor([], '2026-10-12', { lang: 'en' }).cells.every(cell => CLICHES.en.includes(cell.phrase)));
 });
