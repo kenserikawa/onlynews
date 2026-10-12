@@ -56,10 +56,10 @@ test('el grito no cuenta siglas, marcas ni números romanos', () => {
 });
 
 test('consenso elige la historia con más medios y los tres lados', () => {
-    const s = story('s-cons', [art('a', 'El Papa será operado'), art('b', 'Operan al Papa'), art('c', 'Papa, al quirófano')],
+    const s = story('s-cons', [art('a', 'Rufián encabezará la lista de ERC'), art('b', 'ERC elige a Rufián'), art('c', 'Rufián repetirá en el Congreso')],
         { coverage: { left: 1, center: 1, right: 1, unrated: 0 } });
     const award = awardsFor([s], SOURCES).find(x => x.id === 'consenso');
-    assert.equal(award.winner, 'El Papa será operado');
+    assert.equal(award.winner, 'Rufián encabezará la lista de ERC');
     assert.equal(award.figure, '3 medios');
 });
 

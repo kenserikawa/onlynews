@@ -50,7 +50,7 @@ test('el blindspot con un solo medio usa singular', () => {
 });
 
 test('consenso con 6 o más medios y los tres lados', () => {
-    const s = story('s-5', [['l1', 'El Papa será operado'], ['l2', 'Operarán al Papa'], ['c1', 'El Papa, al quirófano'], ['c2', 'Papa operado'], ['r1', 'El Papa se opera'], ['r2', 'Operación del Papa']]);
+    const s = story('s-5', [['l1', 'Rufián encabezará la lista de ERC'], ['l2', 'Rufián, candidato de ERC'], ['c1', 'ERC elige a Rufián'], ['c2', 'Rufián repetirá en el Congreso'], ['r1', 'Rufián se queda en Madrid'], ['r2', 'ERC apuesta por Rufián']]);
     assert.match(kickerFor(s, SOURCES), /6 medios|polarización/);
 });
 

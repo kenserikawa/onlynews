@@ -72,7 +72,12 @@ y estas **como palabra completa**: `bomba, bombas, disparo, disparos` (para que 
   si no aparecen otras raíces; «atropellado/atropella a» sí.
 - Falsos positivos aceptados: preferimos dejar sin chiste una noticia neutra que bromear con una tragedia.
 - Tests con casos reales: «Muere un joven apuñalado en Granada» → sensible; «Al menos 12 muertos en Riad»
-  → sensible; «Sánchez pide frenar el atropello de Feijóo» → no; «El Papa será operado de un nódulo» → no.
+  → sensible; «Sánchez pide frenar el atropello de Feijóo» → no.
+- **Enfermedades** (decisión del 2026-10-12): también son sensibles las noticias sobre la salud de personas
+  (enfermedades, diagnósticos, operaciones, hospitalizaciones, salud mental, brotes). «El Papa será operado de un
+  nódulo» → sensible.
+- La lista vigente (más amplia: ataques, guerras, catástrofes, rescates; castellano e inglés; también entradillas)
+  está en `site/js/satire/guard.js`. La sensibilidad se calcula con todos los medios, antes de aplicar los ocultos.
 
 ## 4. Titulares meta (`kickerFor`)
 

@@ -9,6 +9,10 @@ const PREFIXES = [
     'bombarde', 'misil', 'dron', 'guerra', 'ofensiva', 'inundac', 'riada', 'terremoto', 'sismo', 'tsunami', 'huracan',
     'tormenta', 'borrasca', 'evacu', 'tragedia', 'tragic', 'hunde', 'gaza', 'hamas', 'huti', 'hezbol', 'ucrani', 'yihad',
     'rescat', 'salvamento', 'patera', 'cayuco', 'atrapad',
+    // enfermedades y salud de personas
+    'enferm', 'cancer', 'tumor', 'nodul', 'operad', 'operar', 'quirofan', 'cirug', 'hospital', 'ingresad', 'diagnos',
+    'parki', 'alzheimer', 'demencia', 'ictus', 'infarto', 'covid', 'virus', 'epidemi', 'pandemi', 'brote', 'leucemia',
+    'quimio', 'traspl', 'trasplant', 'paciente', 'dolencia', 'patolog', 'neumonia', 'depresion', 'sarampion', 'gripe',
     // inglés (edición Internacional)
     'kill', 'death', 'deadly', 'fatal', 'slain', 'slaughter', 'murder', 'stab', 'shoot', 'gun', 'rape', 'rapist',
     'assault', 'abuse', 'victim', 'injur', 'wound', 'crash', 'drown', 'shipwreck', 'missing', 'kidnap', 'hostage',
@@ -16,11 +20,16 @@ const PREFIXES = [
     'invasion', 'hurricane', 'storm', 'flood', 'earthquake', 'quake', 'tornado', 'wildfire', 'blaze', 'flame', 'poison',
     'casualt', 'hijack', 'genocide', 'terror', 'evacuat', 'tragedy', 'tragic', 'ukrain', 'houthi', 'hezbollah',
     'rescue', 'trapped', 'stranded',
+    'cancer', 'tumour', 'surgery', 'surgical', 'illness', 'sick', 'disease', 'diagnos', 'parkinson', 'alzheimer',
+    'dementia', 'stroke', 'covid', 'virus', 'pandemic', 'epidemic', 'outbreak', 'measles', 'leukemia', 'chemo',
+    'transplant', 'patient', 'nodule', 'overdose', 'hospitali',
 ];
-const PHRASES = ['agresion sexual', 'sin vida', 'pierde la vida', 'pierden la vida', 'perdio la vida', 'sexual assault', 'death toll'];
+const PHRASES = ['agresion sexual', 'sin vida', 'pierde la vida', 'pierden la vida', 'perdio la vida', 'sexual assault', 'death toll',
+    'salud mental', 'mental health', 'heart attack'];
 // Palabras completas: como raíz darían falsos positivos («bombazo», «Diego», «diez», «matrícula», «fires» de despedir).
 const WORDS = new Set(['bomba', 'bombas', 'bomb', 'bombs', 'bombed', 'bomber', 'bombers', 'die', 'dies', 'died', 'dead',
-    'shot', 'shots', 'war', 'wars', 'fire', 'mata', 'matan', 'mato', 'matar', 'mataron', 'matado', 'matada', 'dana']);
+    'shot', 'shots', 'war', 'wars', 'fire', 'mata', 'matan', 'mato', 'matar', 'mataron', 'matado', 'matada', 'dana',
+    'uci', 'ela', 'sida', 'vih', 'ill', 'icu', 'hiv', 'aids']);
 
 export function normalizeTitle(text) {
     return String(text ?? '').toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();

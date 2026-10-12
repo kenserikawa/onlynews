@@ -53,13 +53,24 @@ test('isSensitiveTitle detecta sucesos con víctimas', () => {
         'Llega una patera con 40 personas a Lanzarote',
         'Un cayuco con 150 personas alcanza El Hierro',
         'Four young boys are rescued after becoming trapped in a cave',
+        // enfermedades
+        'El Papa León XIV será operado de un nódulo en el pulmón',
+        'Pepe Colubi anuncia que tiene párkinson',
+        'El humorista Pepe Colubi cuenta que tiene párkison',
+        'Ingresado en la UCI el exministro tras sufrir un infarto',
+        'Le diagnostican un cáncer de mama',
+        'Día Mundial de la Salud Mental: listas de espera de hasta seis meses',
+        'La cantante, hospitalizada por una neumonía',
+        'Pope Leo to undergo surgery after nodule discovered on his lung',
+        'Actor reveals Alzheimer\'s diagnosis',
+        'Measles outbreak spreads in Texas',
     ]) assert.equal(isSensitiveTitle(title), true, title);
 });
 
 test('isSensitiveTitle no salta con metáforas ni clichés', () => {
     for (const title of [
         'Sánchez pide al Supremo que frene el "atropello" de Feijóo y Abascal',
-        'El Papa León XIV será operado de un nódulo en el pulmón',
+        'La Policía desarticula una red en una operación antidroga',
         'El bombazo del verano: la gira que nadie esperaba',
         'Rufián encabezará la lista de ERC al Congreso',
         'Diego Simeone renueva diez años con el Atlético',
