@@ -153,3 +153,22 @@ test('un guid que no es una URL absoluta no se convierte en enlace', () => {
 </channel></rss>`;
     assert.deepEqual(parseFeed(xml, source, { now }).map(a => a.url), ['https://m.es/guid-url']);
 });
+
+test('ignora píxeles de seguimiento como imagen y busca la siguiente <img> real', () => {
+    const xml = `<rss><channel>
+<item><title>Solo píxel</title><link>https://m.es/p</link>
+  <description><![CDATA[Texto <img src="http://secure-uk.imrworldwide.com/cgi-bin/m?cid=es&amp;cg=rss" alt=""/>]]></description></item>
+<item><title>Píxel 1x1 y foto</title><link>https://m.es/q</link>
+  <description><![CDATA[<img src="https://stats.m.es/t.gif" width="1" height="1"><img src="https://img.m.es/foto.jpg" width="800">]]></description></item>
+</channel></rss>`;
+    assert.deepEqual(parseFeed(xml, source, { now }).map(a => a.image), [null, 'https://img.m.es/foto.jpg']);
+});
+
+test('las imágenes genéricas por defecto del medio cuentan como sin foto', () => {
+    const xml = `<rss xmlns:media="http://search.yahoo.com/mrss/"><channel>
+<item><title>Default</title><link>https://m.es/d</link><media:content url="https://imghandler.eldebate.com/files/og_thumbnail/images/default.jpg" medium="image"/></item>
+<item><title>Placeholder</title><link>https://m.es/p</link><media:thumbnail url="https://cdn.m.es/img/placeholder-news.png"/></item>
+<item><title>Real</title><link>https://m.es/r</link><media:content url="https://cdn.m.es/2026/10/default-mode-network.jpg" medium="image"/></item>
+</channel></rss>`;
+    assert.deepEqual(parseFeed(xml, source, { now }).map(a => a.image), [null, null, 'https://cdn.m.es/2026/10/default-mode-network.jpg']);
+});

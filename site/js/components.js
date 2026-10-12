@@ -29,7 +29,8 @@ export function storyImage(url, className) {
     const src = safeUrl(url);
     if (!src) return null;
     const img = h('img', { class: className, src, alt: '', loading: 'lazy', decoding: 'async', referrerpolicy: 'no-referrer' });
-    img.addEventListener('error', () => img.remove());
+    // Si la foto no carga (404, bloqueada…), un recuadro del mismo tamaño mantiene regular el diseño.
+    img.addEventListener('error', () => img.replaceWith(h('div', { class: `${className} img-fallback`, 'aria-hidden': 'true' })));
     return img;
 }
 

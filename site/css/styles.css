@@ -258,14 +258,15 @@ main:focus { outline: none; }
 
 /* Resultados de búsqueda: bloques de layout.js */
 .results { display: grid; gap: 28px; margin-top: 24px; }
-.block--hero { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+.block--hero { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 22px; align-items: stretch; }
 .hero-lead .story-title { font-size: clamp(26px, 3vw, 36px); line-height: 1.05; }
-.hero-side { display: grid; gap: 16px; }
+/* Las pequeñas se reparten el alto completo de la grande. */
+.hero-side { display: grid; grid-auto-rows: 1fr; gap: 16px; }
 .block--pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; align-items: stretch; }
 .block--pair .card-img { aspect-ratio: 2 / 1; }
 .small { background: var(--surface); border: var(--bw) solid var(--ink); box-shadow: var(--shadow-sm); }
 .small .story-link { display: grid; height: 100%; }
-.small .story-link.has-thumb { grid-template-columns: 96px minmax(0, 1fr); }
+.small .story-link.has-thumb { grid-template-columns: 120px minmax(0, 1fr); }
 .small-thumb { width: 100%; height: 100%; min-height: 96px; object-fit: cover; border-right: var(--bw) solid var(--ink); background: var(--surface-2); }
 .small-body { padding: 12px 14px; display: grid; gap: 8px; align-content: start; }
 .small .story-title { font-size: 16px; line-height: 1.2; }
@@ -276,4 +277,8 @@ main:focus { outline: none; }
 .small:hover .story-title { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 4px; text-decoration-color: var(--accent); }
 @media (max-width: 760px) {
     .block--hero, .block--pair { grid-template-columns: 1fr; }
+    .hero-side { grid-auto-rows: auto; }
 }
+
+/* Recuadro que sustituye a una foto que no carga */
+.img-fallback { display: block; background-color: var(--surface-2); background-image: repeating-linear-gradient(-45deg, transparent 0 14px, color-mix(in srgb, var(--ink) 14%, transparent) 14px 17px); }

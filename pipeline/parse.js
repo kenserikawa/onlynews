@@ -7,6 +7,8 @@ const FUTURE_TOLERANCE_MS = 3600 * 1000;
 const SUMMARY_MAX = 300;
 const TRACKING_PARAM = /^(utm_.*|fbclid|gclid|ns_.*|ocid|cmpid|mc_cid|mc_eid)$/i;
 const IMAGE_EXT = /\.(jpe?g|png|webp|gif|avif)(\?|$)/i;
+const GENERIC_IMAGE = /^(default|placeholder|no[-_]?image|noimage|sin[-_]?imagen|blank|spacer)([-_.]?(news|thumb|image|img|og))*\.(jpe?g|png|gif|webp|svg)$/i;
+const TRACKING_IMAGE = /imrworldwide\.com|scorecardresearch\.com|doubleclick\.net|google-analytics\.com|quantserve\.com|chartbeat\.net|feedburner\.com\/~r|\/cgi-bin\/|[/.]pixel[./?]/i;
 const ARRAY_TAGS = new Set(['item', 'entry', 'link', 'media:content', 'media:thumbnail', 'enclosure']);
 
 const parser = new XMLParser({
@@ -79,6 +81,15 @@ function dateOf(item, now) {
     return now;
 }
 
+// Una imagen solo cuenta si es una URL válida, no es un píxel de seguimiento y no es la
+// miniatura genérica que algunos medios ponen cuando el artículo no tiene foto.
+function usableImage(raw, base) {
+    const url = normalizeUrl(raw, base);
+    if (!url || TRACKING_IMAGE.test(url)) return null;
+    const file = new URL(url).pathname.split('/').pop();
+    return GENERIC_IMAGE.test(file) ? null : url;
+}
+
 function imageOf(item, html, base) {
     const media = [...(item['media:content'] ?? [])];
     for (const group of [].concat(item['media:group'] ?? [])) media.push(...[].concat(group?.['media:content'] ?? []));
@@ -87,21 +98,26 @@ function imageOf(item, html, base) {
         const type = entry?.['@type'] ?? '';
         const medium = entry?.['@medium'] ?? '';
         const isImage = medium === 'image' || type.startsWith('image/') || (!medium && !type && IMAGE_EXT.test(url ?? ''));
-        const normalized = isImage && normalizeUrl(url, base);
-        if (normalized) return normalized;
+        const usable = isImage && usableImage(url, base);
+        if (usable) return usable;
     }
     for (const thumb of item['media:thumbnail'] ?? []) {
-        const normalized = normalizeUrl(thumb?.['@url'], base);
-        if (normalized) return normalized;
+        const usable = usableImage(thumb?.['@url'], base);
+        if (usable) return usable;
     }
     for (const enclosure of item.enclosure ?? []) {
         if ((enclosure?.['@type'] ?? '').startsWith('image/')) {
-            const normalized = normalizeUrl(enclosure['@url'], base);
-            if (normalized) return normalized;
+            const usable = usableImage(enclosure['@url'], base);
+            if (usable) return usable;
         }
     }
-    const inline = /<img[^>]+src=["']([^"']+)["']/i.exec(decodeEntities(html));
-    return inline ? normalizeUrl(decodeEntities(inline[1]), base) : null;
+    // Primera <img> del cuerpo que no sea un píxel 1×1.
+    for (const [tag, src] of decodeEntities(html).matchAll(/<img[^>]+src=["']([^"']+)["'][^>]*>/gi)) {
+        if (/\b(width|height)=["']?[01]["'\s/>]/i.test(tag)) continue;
+        const usable = usableImage(decodeEntities(src), base);
+        if (usable) return usable;
+    }
+    return null;
 }
 
 export function parseFeed(xml, source, { now = new Date() } = {}) {
